@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mess Meal Tracker</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f4f7fb;
+    color:#172033;
+}
+
+header{
+    background:#102a43;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+header h1{
+    margin:0 0 5px 0;
+}
+
+.container{
+    max-width:750px;
+    margin:auto;
+    padding:15px;
+}
+
+.card{
+    background:white;
+    padding:18px;
+    margin:15px 0;
+    border-radius:14px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+input,
+select,
+button{
+    width:100%;
+    padding:12px;
+    margin:7px 0;
+    border-radius:8px;
+    border:1px solid #ccd5e0;
+    font-size:16px;
+}
+
+button{
+    background:#1565c0;
+    color:white;
+    border:none;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:disabled{
+    background:#999;
+}
+
+.logout{
+    background:#c62828;
+}
+
+.meal-row{
+    display:grid;
+    grid-template-columns:1fr 130px;
+    gap:10px;
+    align-items:center;
+    margin:12px 0;
+}
+
+.meal-row select{
+    margin:0;
+}
+
+.notice{
+    padding:12px;
+    background:#fff3cd;
+    border-radius:8px;
+    margin:10px 0;
+}
+
+.locked{
+    background:#ffdede;
+    color:#a00000;
+}
+
+.success{
+    background:#d9f7df;
+    color:#116b25;
+    padding:10px;
+    border-radius:8px;
+}
+
+.hidden{
+    display:none;
+}
+
+.scroll{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+}
+
+th,
+td{
+    border:1px solid #ccc;
+    padding:8px;
+    text-align:center;
+}
+
+th{
+    background:#102a43;
+    color:white;
+}
+
+.small{
+    color:#667085;
+    font-size:13px;
+}
+
+.total-box{
+    background:#eef5ff;
+    padding:12px;
+    border-radius:8px;
+    text-align:center;
+    font-size:18px;
+    margin-top:12px;
+}
+
+@media print{
+
+    header{
+        background:white;
+        color:black;
+    }
+
+    button,
+    input,
+    select{
+        display:none;
+    }
+
+    .card{
+        box-shadow:none;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>🍽️ Mess Meal Tracker</h1>
+
+    <div>Online Meal Management</div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ================= LOGIN ================= -->
+
+<div id="loginBox" class="card">
+
+    <h2>Login</h2>
+
+    <input
+        id="email"
+        type="email"
+        placeholder="Email"
+    >
+
+    <input
+        id="password"
+        type="password"
+        placeholder="Password"
+    >
+
+    <button onclick="login()">
+        LOGIN
+    </button>
+
+    <p id="loginMsg"></p>
+
+</div>
+
+
+
+<!-- ================= MEMBER PANEL ================= -->
+
+<div id="memberPanel" class="hidden">
+
+
+    <div class="card">
+
+        <h2>👤 Member Dashboard</h2>
+
+        <p>
+            Logged in as:
+            <b id="memberEmail"></b>
+        </p>
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            LOGOUT
+        </button>
+
+    </div>
+
+
+
+    <!-- TOMORROW MEAL -->
+
+    <div class="card">
+
+        <h2>🍽️ Tomorrow's Meal</h2>
+
+        <p>
+            Date:
+            <b id="tomorrowDate"></b>
+        </p>
+
+
+        <div
+            id="lockMessage"
+            class="notice"
+        ></div>
+
+
+        <!-- BREAKFAST -->
+
+        <div class="meal-row">
+
+            <label>
+                Breakfast
+            </label>
+
+            <select id="breakfast">
+
+                <option value="0">
+                    0
+                </option>
+
+                <option value="1">
+                    1
+                </option>
+
+                <option value="2">
+                    2
+                </option>
+
+                <option value="3">
+                    3
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- LUNCH -->
+
+        <div class="meal-row">
+
+            <label>
+                Lunch
+            </label>
+
+            <select id="lunch">
+
+                <option value="0">
+                    0
+                </option>
+
+                <option value="1">
+                    1
+                </option>
+
+                <option value="2">
+                    2
+                </option>
+
+                <option value="3">
+                    3
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- DINNER -->
+
+        <div class="meal-row">
+
+            <label>
+                Dinner
+            </label>
+
+            <select id="dinner">
+
+                <option value="0">
+                    0
+                </option>
+
+                <option value="1">
+                    1
+                </option>
+
+                <option value="2">
+                    2
+                </option>
+
+                <option value="3">
+                    3
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <div class="total-box">
+
+            Total Meal:
+
+            <b id="mealTotal">
+                0
+            </b>
+
+        </div>
+
+
+
+        <button
+            id="saveBtn"
+            onclick="saveMeal()"
+        >
+            SAVE TOMORROW'S MEAL
+        </button>
+
+
+        <p id="saveMsg"></p>
+
+    </div>
+
+
+
+    <!-- HISTORY -->
+
+    <div class="card">
+
+        <h2>📋 My Meal History</h2>
+
+        <button onclick="loadHistory()">
+            REFRESH HISTORY
+        </button>
+
+
+        <div class="scroll">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Date</th>
+                        <th>Breakfast</th>
+                        <th>Lunch</th>
+                        <th>Dinner</th>
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="historyBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ================= ADMIN PANEL ================= -->
+
+<div id="adminPanel" class="hidden">
+
+
+    <div class="card">
+
+        <h2>⚙️ Admin Dashboard</h2>
+
+        <p>
+            Admin:
+            <b id="adminEmail"></b>
+        </p>
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            LOGOUT
+        </button>
+
+    </div>
+
+
+
+    <!-- REPORT -->
+
+    <div class="card">
+
+        <h2>📊 Meal Report</h2>
+
+
+        <label>
+            From Date
+        </label>
+
+        <input
+            id="fromDate"
+            type="date"
+        >
+
+
+        <label>
+            To Date
+        </label>
+
+        <input
+            id="toDate"
+            type="date"
+        >
+
+
+        <button onclick="loadReport()">
+            LOAD REPORT
+        </button>
+
+
+        <button onclick="window.print()">
+            PRINT / SAVE PDF
+        </button>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <div class="scroll">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Date</th>
+                        <th>Member</th>
+                        <th>Breakfast</th>
+                        <th>Lunch</th>
+                        <th>Dinner</th>
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="reportBody">
+
+                </tbody>
+
+
+                <tfoot>
+
+                    <tr>
+
+                        <th colspan="5">
+                            GRAND TOTAL
+                        </th>
+
+                        <th id="grandTotal">
+                            0
+                        </th>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- ================= FIREBASE ================= -->
+
+<script type="module">
+
+
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    collection,
+    getDocs,
+    query,
+    where
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+
+/* ==============================
+   FIREBASE CONFIG
+============================== */
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyCgGWvj5giLSHBiXhH2u3nTT0OpoMtc",
+
+    authDomain:
+    "mess-meal-c0d83.firebaseapp.com",
+
+    projectId:
+    "mess-meal-c0d83",
+
+    storageBucket:
+    "mess-meal-c0d83.firebasestorage.app",
+
+    messagingSenderId:
+    "9524418270",
+
+    appId:
+    "1:9524418270:web:7197daa9122ec5a0b9944f"
+
+};
+
+
+
+const app =
+initializeApp(firebaseConfig);
+
+
+const auth =
+getAuth(app);
+
+
+const db =
+getFirestore(app);
+
+
+
+/* ==============================
+   BANGLADESH DATE
+============================== */
+
+function dhakaDate(){
+
+    return new Intl.DateTimeFormat(
+        "en-CA",
+        {
+            timeZone:"Asia/Dhaka",
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit"
+        }
+    ).format(new Date());
+
+}
+
+
+
+/* ==============================
+   TOMORROW DATE
+============================== */
+
+function tomorrow(){
+
+    const now =
+    new Date();
+
+
+    const formatter =
+    new Intl.DateTimeFormat(
+        "en-US",
+        {
+            timeZone:"Asia/Dhaka",
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit"
+        }
+    );
+
+
+    const parts =
+    formatter.formatToParts(now);
+
+
+    let year;
+    let month;
+    let day;
+
+
+    parts.forEach(p => {
+
+        if(p.type === "year"){
+            year = Number(p.value);
+        }
+
+        if(p.type === "month"){
+            month = Number(p.value);
+        }
+
+        if(p.type === "day"){
+            day = Number(p.value);
+        }
+
+    });
+
+
+    const date =
+    new Date(
+        year,
+        month - 1,
+        day + 1
+    );
+
+
+    return (
+
+        date.getFullYear()
+        + "-"
+        +
+        String(
+            date.getMonth()+1
+        ).padStart(2,"0")
+        + "-"
+        +
+        String(
+            date.getDate()
+        ).padStart(2,"0")
+
+    );
+
+}
+
+
+
+/* ==============================
+   9 PM LOCK
+============================== */
+
+function isLocked(){
+
+    const parts =
+    new Intl.DateTimeFormat(
+        "en-GB",
+        {
+            timeZone:"Asia/Dhaka",
+            hour:"2-digit",
+            minute:"2-digit",
+            hour12:false
+        }
+    ).formatToParts(
+        new Date()
+    );
+
+
+    let hour = 0;
+
+
+    parts.forEach(p => {
+
+        if(p.type === "hour"){
+            hour = Number(p.value);
+        }
+
+    });
+
+
+    return hour >= 21;
+
+}
+
+
+
+/* ==============================
+   TOTAL
+============================== */
+
+function updateTotal(){
+
+    const b =
+    Number(
+        document.getElementById(
+            "breakfast"
+        ).value
+    ) || 0;
+
+
+    const l =
+    Number(
+        document.getElementById(
+            "lunch"
+        ).value
+    ) || 0;
+
+
+    const d =
+    Number(
+        document.getElementById(
+            "dinner"
+        ).value
+    ) || 0;
+
+
+    document.getElementById(
+        "mealTotal"
+    ).innerText =
+    b + l + d;
+
+}
+
+
+
+document.getElementById(
+    "breakfast"
+)
+.addEventListener(
+    "change",
+    updateTotal
+);
+
+
+document.getElementById(
+    "lunch"
+)
+.addEventListener(
+    "change",
+    updateTotal
+);
+
+
+document.getElementById(
+    "dinner"
+)
+.addEventListener(
+    "change",
+    updateTotal
+);
+
+
+
+/* ==============================
+   LOGIN
+============================== */
+
+window.login =
+async function(){
+
+    const email =
+    document.getElementById(
+        "email"
+    ).value.trim();
+
+
+    const password =
+    document.getElementById(
+        "password"
+    ).value;
+
+
+    const msg =
+    document.getElementById(
+        "loginMsg"
+    );
+
+
+    msg.innerText =
+    "Logging in...";
+
+
+    try{
+
+        await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+
+        msg.innerText = "";
+
+    }
+    catch(error){
+
+        msg.innerText =
+        "Login failed: "
+        +
+        error.message;
+
+    }
+
+};
+
+
+
+/* ==============================
+   LOGOUT
+============================== */
+
+window.logout =
+async function(){
+
+    await signOut(auth);
+
+};
+
+
+
+/* ==============================
+   AUTH STATE
+============================== */
+
+onAuthStateChanged(
+    auth,
+    async(user) => {
+
+
+        if(!user){
+
+            document
+            .getElementById(
+                "loginBox"
+            )
+            .classList
+            .remove("hidden");
+
+
+            document
+            .getElementById(
+                "memberPanel"
+            )
+            .classList
+            .add("hidden");
+
+
+            document
+            .getElementById(
+                "adminPanel"
+            )
+            .classList
+            .add("hidden");
+
+
+            return;
+
+        }
+
+
+
+        document
+        .getElementById(
+            "loginBox"
+        )
+        .classList
+        .add("hidden");
+
+
+
+        /* ADMIN */
+
+        if(
+            user.email ===
+            "admin@mess.local"
+        ){
+
+            document
+            .getElementById(
+                "adminPanel"
+            )
+            .classList
+            .remove("hidden");
+
+
+            document
+            .getElementById(
+                "memberPanel"
+            )
+            .classList
+            .add("hidden");
+
+
+            document
+            .getElementById(
+                "adminEmail"
+            )
+            .innerText =
+            user.email;
+
+
+            return;
+
+        }
+
+
+
+        /* MEMBER */
+
+        document
+        .getElementById(
+            "memberPanel"
+        )
+        .classList
+        .remove("hidden");
+
+
+        document
+        .getElementById(
+            "adminPanel"
+        )
+        .classList
+        .add("hidden");
+
+
+        document
+        .getElementById(
+            "memberEmail"
+        )
+        .innerText =
+        user.email;
+
+
+        document
+        .getElementById(
+            "tomorrowDate"
+        )
+        .innerText =
+        tomorrow();
+
+
+        applyLock();
+
+        await loadTomorrowMeal();
+
+        await loadHistory();
+
+    }
+
+);
+
+
+
+/* ==============================
+   APPLY LOCK
+============================== */
+
+function applyLock(){
+
+    const locked =
+    isLocked();
+
+
+    const button =
+    document.getElementById(
+        "saveBtn"
+    );
+
+
+    const message =
+    document.getElementById(
+        "lockMessage"
+    );
+
+
+    if(locked){
+
+        button.disabled = true;
+
+
+        message.className =
+        "notice locked";
+
+
+        message.innerHTML =
+        "🔒 <b>LOCKED</b><br>" +
+        "9:00 PM has passed. " +
+        "Tomorrow's meal cannot be changed.";
+
+    }
+    else{
+
+        button.disabled = false;
+
+
+        message.className =
+        "notice";
+
+
+        message.innerHTML =
+        "⏰ You can change tomorrow's meal until " +
+        "<b>9:00 PM Bangladesh time</b>.";
+
+    }
+
+}
+
+
+
+/* ==============================
+   SAVE MEAL
+============================== */
+
+window.saveMeal =
+async function(){
+
+    if(isLocked()){
+
+        alert(
+            "9:00 PM has passed. Meal is locked."
+        );
+
+        applyLock();
+
+        return;
+
+    }
+
+
+    const user =
+    auth.currentUser;
+
+
+    if(!user){
+        return;
+    }
+
+
+    const date =
+    tomorrow();
+
+
+    const breakfast =
+    Number(
+        document.getElementById(
+            "breakfast"
+        ).value
+    );
+
+
+    const lunch =
+    Number(
+        document.getElementById(
+            "lunch"
+        ).value
+    );
+
+
+    const dinner =
+    Number(
+        document.getElementById(
+            "dinner"
+        ).value
+    );
+
+
+
+    /*
+       SECURITY CHECK:
+       Only 0,1,2,3 accepted
+    */
+
+    const valid =
+    [0,1,2,3];
+
+
+    if(
+        !valid.includes(breakfast) ||
+        !valid.includes(lunch) ||
+        !valid.includes(dinner)
+    ){
+
+        alert(
+            "Only 0, 1, 2 or 3 are allowed."
+        );
+
+        return;
+
+    }
+
+
+    const total =
+    breakfast +
+    lunch +
+    dinner;
+
+
+
+    try{
+
+        await setDoc(
+
+            doc(
+                db,
+                "meals",
+                user.uid +
+                "_" +
+                date
+            ),
+
+            {
+
+                uid:user.uid,
+
+                email:user.email,
+
+                date:date,
+
+                breakfast:breakfast,
+
+                lunch:lunch,
+
+                dinner:dinner,
+
+                total:total,
+
+                updatedAt:
+                new Date().toISOString()
+
+            },
+
+            {
+                merge:true
+            }
+
+        );
+
+
+        const msg =
+        document.getElementById(
+            "saveMsg"
+        );
+
+
+        msg.innerText =
+        "✅ Meal saved successfully.";
+
+
+        msg.className =
+        "success";
+
+
+        await loadHistory();
+
+    }
+    catch(error){
+
+        document.getElementById(
+            "saveMsg"
+        ).innerText =
+        "❌ Error: "
+        +
+        error.message;
+
+    }
+
+};
+
+
+
+/* ==============================
+   LOAD TOMORROW MEAL
+============================== */
+
+async function loadTomorrowMeal(){
+
+    const user =
+    auth.currentUser;
+
+
+    if(!user){
+        return;
+    }
+
+
+    const date =
+    tomorrow();
+
+
+    try{
+
+        const snap =
+        await getDoc(
+
+            doc(
+                db,
+                "meals",
+                user.uid +
+                "_" +
+                date
+            )
+
+        );
+
+
+        if(!snap.exists()){
+
+            document.getElementById(
+                "breakfast"
+            ).value = "0";
+
+
+            document.getElementById(
+                "lunch"
+            ).value = "0";
+
+
+            document.getElementById(
+                "dinner"
+            ).value = "0";
+
+
+            updateTotal();
+
+            return;
+
+        }
+
+
+        const data =
+        snap.data();
+
+
+        document.getElementById(
+            "breakfast"
+        ).value =
+        data.breakfast ?? 0;
+
+
+        document.getElementById(
+            "lunch"
+        ).value =
+        data.lunch ?? 0;
+
+
+        document.getElementById(
+            "dinner"
+        ).value =
+        data.dinner ?? 0;
+
+
+        updateTotal();
+
+    }
+    catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+
+
+/* ==============================
+   MEMBER HISTORY
+============================== */
+
+window.loadHistory =
+async function(){
+
+    const user =
+    auth.currentUser;
+
+
+    if(!user){
+        return;
+    }
+
+
+    const body =
+    document.getElementById(
+        "historyBody"
+    );
+
+
+    body.innerHTML =
+    "<tr>" +
+    "<td colspan='5'>Loading...</td>" +
+    "</tr>";
+
+
+    try{
+
+        const q =
+        query(
+
+            collection(
+                db,
+                "meals"
+            ),
+
+            where(
+                "uid",
+                "==",
+                user.uid
+            )
+
+        );
+
+
+        const snap =
+        await getDocs(q);
+
+
+        let rows = [];
+
+
+        snap.forEach(
+            docSnap => {
+
+                rows.push(
+                    docSnap.data()
+                );
+
+            }
+        );
+
+
+        rows.sort(
+            (a,b) =>
+            String(b.date)
+            .localeCompare(
+                String(a.date)
+            )
+        );
+
+
+        body.innerHTML = "";
+
+
+        if(rows.length === 0){
+
+            body.innerHTML =
+            "<tr>" +
+            "<td colspan='5'>" +
+            "No meal record" +
+            "</td>" +
+            "</tr>";
+
+            return;
+
+        }
+
+
+        rows.forEach(r => {
+
+            body.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${r.date || ""}
+                </td>
+
+                <td>
+                    ${r.breakfast ?? 0}
+                </td>
+
+                <td>
+                    ${r.lunch ?? 0}
+                </td>
+
+                <td>
+                    ${r.dinner ?? 0}
+                </td>
+
+                <td>
+                    <b>
+                        ${r.total ?? 0}
+                    </b>
+                </td>
+
+            </tr>
+
+            `;
+
+        });
+
+    }
+    catch(error){
+
+        body.innerHTML =
+        "<tr>" +
+        "<td colspan='5'>" +
+        error.message +
+        "</td>" +
+        "</tr>";
+
+    }
+
+};
+
+
+
+/* ==============================
+   ADMIN REPORT
+============================== */
+
+window.loadReport =
+async function(){
+
+    const from =
+    document.getElementById(
+        "fromDate"
+    ).value;
+
+
+    const to =
+    document.getElementById(
+        "toDate"
+    ).value;
+
+
+    if(!from || !to){
+
+        alert(
+            "Please select both dates."
+        );
+
+        return;
+
+    }
+
+
+    const body =
+    document.getElementById(
+        "reportBody"
+    );
+
+
+    body.innerHTML =
+    "<tr>" +
+    "<td colspan='6'>Loading...</td>" +
+    "</tr>";
+
+
+    try{
+
+        const snap =
+        await getDocs(
+            collection(
+                db,
+                "meals"
+            )
+        );
+
+
+        let rows = [];
+
+
+        snap.forEach(
+            docSnap => {
+
+                const r =
+                docSnap.data();
+
+
+                if(
+                    r.date >= from &&
+                    r.date <= to
+                ){
+
+                    rows.push(r);
+
+                }
+
+            }
+        );
+
+
+        rows.sort(
+            (a,b) => {
+
+                if(a.date === b.date){
+
+                    return String(
+                        a.email
+                    )
+                    .localeCompare(
+                        String(b.email)
+                    );
+
+                }
+
+
+                return String(
+                    a.date
+                )
+                .localeCompare(
+                    String(b.date)
+                );
+
+            }
+        );
+
+
+        body.innerHTML = "";
+
+
+        let grandTotal = 0;
+
+
+        rows.forEach(r => {
+
+            const total =
+            Number(r.total) || 0;
+
+
+            grandTotal += total;
+
+
+            body.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${r.date || ""}
+                </td>
+
+                <td>
+                    ${r.email || ""}
+                </td>
+
+                <td>
+                    ${r.breakfast ?? 0}
+                </td>
+
+                <td>
+                    ${r.lunch ?? 0}
+                </td>
+
+                <td>
+                    ${r.dinner ?? 0}
+                </td>
+
+                <td>
+                    <b>
+                        ${total}
+                    </b>
+                </td>
+
+            </tr>
+
+            `;
+
+        });
+
+
+        if(rows.length === 0){
+
+            body.innerHTML =
+            "<tr>" +
+            "<td colspan='6'>" +
+            "No records found" +
+            "</td>" +
+            "</tr>";
+
+        }
+
+
+        document.getElementById(
+            "grandTotal"
+        ).innerText =
+        grandTotal;
+
+    }
+    catch(error){
+
+        body.innerHTML =
+        "<tr>" +
+        "<td colspan='6'>" +
+        error.message +
+        "</td>" +
+        "</tr>";
+
+    }
+
+};
+
+
+
+/* ==============================
+   DEFAULT ADMIN DATES
+============================== */
+
+document.getElementById(
+    "fromDate"
+).value =
+dhakaDate();
+
+
+document.getElementById(
+    "toDate"
+).value =
+dhakaDate();
+
+
+
+/* ==============================
+   CHECK LOCK EVERY MINUTE
+============================== */
+
+setInterval(
+    () => {
+
+        if(auth.currentUser){
+
+            applyLock();
+
+        }
+
+    },
+    60000
+);
+
+</script>
+
+</body>
+</html>

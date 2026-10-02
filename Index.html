@@ -1,1696 +1,1218 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mess Meal Tracker</title>
 
-<title>Mess Meal Tracker</title>
-
-<style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#f4f7fb;
-    color:#172033;
-}
-
-header{
-    background:#102a43;
-    color:white;
-    padding:20px;
-    text-align:center;
-}
-
-header h1{
-    margin:0 0 5px 0;
-}
-
-.container{
-    max-width:750px;
-    margin:auto;
-    padding:15px;
-}
-
-.card{
-    background:white;
-    padding:18px;
-    margin:15px 0;
-    border-radius:14px;
-    box-shadow:0 3px 12px rgba(0,0,0,.08);
-}
-
-input,
-select,
-button{
-    width:100%;
-    padding:12px;
-    margin:7px 0;
-    border-radius:8px;
-    border:1px solid #ccd5e0;
-    font-size:16px;
-}
-
-button{
-    background:#1565c0;
-    color:white;
-    border:none;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-button:disabled{
-    background:#999;
-}
-
-.logout{
-    background:#c62828;
-}
-
-.meal-row{
-    display:grid;
-    grid-template-columns:1fr 130px;
-    gap:10px;
-    align-items:center;
-    margin:12px 0;
-}
-
-.meal-row select{
-    margin:0;
-}
-
-.notice{
-    padding:12px;
-    background:#fff3cd;
-    border-radius:8px;
-    margin:10px 0;
-}
-
-.locked{
-    background:#ffdede;
-    color:#a00000;
-}
-
-.success{
-    background:#d9f7df;
-    color:#116b25;
-    padding:10px;
-    border-radius:8px;
-}
-
-.hidden{
-    display:none;
-}
-
-.scroll{
-    overflow-x:auto;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:13px;
-}
-
-th,
-td{
-    border:1px solid #ccc;
-    padding:8px;
-    text-align:center;
-}
-
-th{
-    background:#102a43;
-    color:white;
-}
-
-.small{
-    color:#667085;
-    font-size:13px;
-}
-
-.total-box{
-    background:#eef5ff;
-    padding:12px;
-    border-radius:8px;
-    text-align:center;
-    font-size:18px;
-    margin-top:12px;
-}
-
-@media print{
-
-    header{
-        background:white;
-        color:black;
+  <style>
+    * {
+      box-sizing: border-box;
     }
 
-    button,
-    input,
-    select{
-        display:none;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #222;
     }
 
-    .card{
-        box-shadow:none;
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
     }
 
-}
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
 
-</style>
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background: #1565c0;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #0d47a1;
+    }
+
+    .danger {
+      background: #c62828;
+    }
+
+    .success {
+      background: #2e7d32;
+    }
+
+    .logout {
+      background: #555;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .meal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .meal-box {
+      border: 1px solid #ddd;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    .total-box {
+      margin-top: 15px;
+      padding: 15px;
+      background: #e3f2fd;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .notice {
+      padding: 12px;
+      border-radius: 8px;
+      background: #fff3cd;
+      color: #664d03;
+      margin-bottom: 15px;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .success-msg {
+      background: #e8f5e9;
+      color: #1b5e20;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background: #1565c0;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f8f8;
+    }
+
+    .admin-badge {
+      display: inline-block;
+      background: #6a1b9a;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .meal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 10px;
+      }
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+      }
+
+      .card {
+        box-shadow: none;
+      }
+    }
+  </style>
 </head>
-
 
 <body>
 
-
-<header>
-
-    <h1>🍽️ Mess Meal Tracker</h1>
-
-    <div>Online Meal Management</div>
-
-</header>
-
-
 <div class="container">
 
+  <!-- LOGIN -->
+  <div id="loginSection" class="card">
+    <h1>🍽️ Mess Meal Tracker</h1>
 
-<!-- ================= LOGIN ================= -->
-
-<div id="loginBox" class="card">
-
-    <h2>Login</h2>
+    <p>Login to continue</p>
 
     <input
-        id="email"
-        type="email"
-        placeholder="Email"
+      type="email"
+      id="email"
+      placeholder="Email"
+      autocomplete="email"
     >
 
     <input
-        id="password"
-        type="password"
-        placeholder="Password"
+      type="password"
+      id="password"
+      placeholder="Password"
+      autocomplete="current-password"
     >
 
-    <button onclick="login()">
-        LOGIN
-    </button>
+    <button id="loginBtn">Login</button>
 
-    <p id="loginMsg"></p>
+    <div id="loginMessage"></div>
+  </div>
+
+
+  <!-- MEMBER DASHBOARD -->
+  <div id="memberSection" class="hidden">
+
+    <div class="card">
+      <h2>🍽️ Meal Dashboard</h2>
+
+      <p>
+        Logged in as:
+        <strong id="userEmail"></strong>
+      </p>
+
+      <div class="notice">
+        ⏰ Tomorrow's meal can be changed until <b>9:00 PM Bangladesh time</b>.
+        After 9:00 PM it is locked.
+      </div>
+
+      <h3>
+        Tomorrow:
+        <span id="tomorrowDate"></span>
+      </h3>
+
+      <div class="meal-grid">
+
+        <div class="meal-box">
+          <label><b>Breakfast</b></label>
+          <select id="breakfast">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+
+        <div class="meal-box">
+          <label><b>Lunch</b></label>
+          <select id="lunch">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+
+        <div class="meal-box">
+          <label><b>Dinner</b></label>
+          <select id="dinner">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="total-box">
+        Total:
+        <span id="mealTotal">0</span>
+      </div>
+
+      <button id="saveMealBtn" class="success">
+        Save Tomorrow's Meal
+      </button>
+
+      <div id="saveMessage"></div>
+
+      <button id="logoutBtn" class="logout">
+        Logout
+      </button>
+    </div>
+
+
+    <!-- MEMBER HISTORY -->
+    <div class="card">
+      <h2>📋 My Meal History</h2>
+
+      <button id="loadHistoryBtn">
+        Load My History
+      </button>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Breakfast</th>
+              <th>Lunch</th>
+              <th>Dinner</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="adminSection" class="hidden">
+
+    <div class="card">
+      <span class="admin-badge">ADMIN</span>
+
+      <h2>🛠️ Admin Dashboard</h2>
+
+      <p>
+        Logged in as:
+        <strong id="adminEmail"></strong>
+      </p>
+
+      <button id="loadReportBtn">
+        Load Complete Mess Report
+      </button>
+
+      <button id="printBtn">
+        🖨️ Print / Save PDF
+      </button>
+
+      <button id="adminLogoutBtn" class="logout">
+        Logout
+      </button>
+    </div>
+
+
+    <div class="card">
+
+      <h2>📊 Complete Meal Report</h2>
+
+      <div class="table-wrapper">
+
+        <table id="reportTable">
+
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Member</th>
+              <th>Breakfast</th>
+              <th>Lunch</th>
+              <th>Dinner</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody id="reportBody"></tbody>
+
+          <tfoot>
+            <tr>
+              <th colspan="5">Grand Total</th>
+              <th id="grandTotal">0</th>
+            </tr>
+          </tfoot>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 
-
-
-<!-- ================= MEMBER PANEL ================= -->
-
-<div id="memberPanel" class="hidden">
-
-
-    <div class="card">
-
-        <h2>👤 Member Dashboard</h2>
-
-        <p>
-            Logged in as:
-            <b id="memberEmail"></b>
-        </p>
-
-        <button
-            class="logout"
-            onclick="logout()"
-        >
-            LOGOUT
-        </button>
-
-    </div>
-
-
-
-    <!-- TOMORROW MEAL -->
-
-    <div class="card">
-
-        <h2>🍽️ Tomorrow's Meal</h2>
-
-        <p>
-            Date:
-            <b id="tomorrowDate"></b>
-        </p>
-
-
-        <div
-            id="lockMessage"
-            class="notice"
-        ></div>
-
-
-        <!-- BREAKFAST -->
-
-        <div class="meal-row">
-
-            <label>
-                Breakfast
-            </label>
-
-            <select id="breakfast">
-
-                <option value="0">
-                    0
-                </option>
-
-                <option value="1">
-                    1
-                </option>
-
-                <option value="2">
-                    2
-                </option>
-
-                <option value="3">
-                    3
-                </option>
-
-            </select>
-
-        </div>
-
-
-
-        <!-- LUNCH -->
-
-        <div class="meal-row">
-
-            <label>
-                Lunch
-            </label>
-
-            <select id="lunch">
-
-                <option value="0">
-                    0
-                </option>
-
-                <option value="1">
-                    1
-                </option>
-
-                <option value="2">
-                    2
-                </option>
-
-                <option value="3">
-                    3
-                </option>
-
-            </select>
-
-        </div>
-
-
-
-        <!-- DINNER -->
-
-        <div class="meal-row">
-
-            <label>
-                Dinner
-            </label>
-
-            <select id="dinner">
-
-                <option value="0">
-                    0
-                </option>
-
-                <option value="1">
-                    1
-                </option>
-
-                <option value="2">
-                    2
-                </option>
-
-                <option value="3">
-                    3
-                </option>
-
-            </select>
-
-        </div>
-
-
-
-        <div class="total-box">
-
-            Total Meal:
-
-            <b id="mealTotal">
-                0
-            </b>
-
-        </div>
-
-
-
-        <button
-            id="saveBtn"
-            onclick="saveMeal()"
-        >
-            SAVE TOMORROW'S MEAL
-        </button>
-
-
-        <p id="saveMsg"></p>
-
-    </div>
-
-
-
-    <!-- HISTORY -->
-
-    <div class="card">
-
-        <h2>📋 My Meal History</h2>
-
-        <button onclick="loadHistory()">
-            REFRESH HISTORY
-        </button>
-
-
-        <div class="scroll">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>Date</th>
-                        <th>Breakfast</th>
-                        <th>Lunch</th>
-                        <th>Dinner</th>
-                        <th>Total</th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="historyBody">
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-
-</div>
-
-
-
-<!-- ================= ADMIN PANEL ================= -->
-
-<div id="adminPanel" class="hidden">
-
-
-    <div class="card">
-
-        <h2>⚙️ Admin Dashboard</h2>
-
-        <p>
-            Admin:
-            <b id="adminEmail"></b>
-        </p>
-
-        <button
-            class="logout"
-            onclick="logout()"
-        >
-            LOGOUT
-        </button>
-
-    </div>
-
-
-
-    <!-- REPORT -->
-
-    <div class="card">
-
-        <h2>📊 Meal Report</h2>
-
-
-        <label>
-            From Date
-        </label>
-
-        <input
-            id="fromDate"
-            type="date"
-        >
-
-
-        <label>
-            To Date
-        </label>
-
-        <input
-            id="toDate"
-            type="date"
-        >
-
-
-        <button onclick="loadReport()">
-            LOAD REPORT
-        </button>
-
-
-        <button onclick="window.print()">
-            PRINT / SAVE PDF
-        </button>
-
-    </div>
-
-
-
-    <div class="card">
-
-        <div class="scroll">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>Date</th>
-                        <th>Member</th>
-                        <th>Breakfast</th>
-                        <th>Lunch</th>
-                        <th>Dinner</th>
-                        <th>Total</th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="reportBody">
-
-                </tbody>
-
-
-                <tfoot>
-
-                    <tr>
-
-                        <th colspan="5">
-                            GRAND TOTAL
-                        </th>
-
-                        <th id="grandTotal">
-                            0
-                        </th>
-
-                    </tr>
-
-                </tfoot>
-
-            </table>
-
-        </div>
-
-    </div>
-
-
-</div>
-
-
-</div>
-
-
-
-<!-- ================= FIREBASE ================= -->
 
 <script type="module">
 
+  /* ============================================
+     FIREBASE IMPORTS
+     ============================================ */
 
-import {
-    initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
-
-import {
+  import {
     getAuth,
     signInWithEmailAndPassword,
     onAuthStateChanged,
     signOut
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+  }
+    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-
-import {
+  import {
     getFirestore,
+    collection,
     doc,
     setDoc,
     getDoc,
-    collection,
     getDocs,
     query,
     where
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  }
+    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
+  /* ============================================
+     FIREBASE CONFIG
+     ============================================ */
 
-/* ==============================
-   FIREBASE CONFIG
-============================== */
-
-const firebaseConfig = {
-
-    apiKey:
-    "AIzaSyCgGWvj5giLSHBiXhH2u3nTT0OpoMtc",
-
-    authDomain:
-    "mess-meal-c0d83.firebaseapp.com",
-
-    projectId:
-    "mess-meal-c0d83",
-
-    storageBucket:
-    "mess-meal-c0d83.firebasestorage.app",
-
-    messagingSenderId:
-    "9524418270",
-
-    appId:
-    "1:9524418270:web:7197daa9122ec5a0b9944f"
-
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCgGWvj5giLSHBiXhH2u3nTT0OpoMtc",
+    authDomain: "mess-meal-c0d83.firebaseapp.com",
+    projectId: "mess-meal-c0d83",
+    storageBucket: "mess-meal-c0d83.firebasestorage.app",
+    messagingSenderId: "9524418270",
+    appId: "1:9524418270:web:7197daa9122ec5a0b9944f"
+  };
 
 
+  /* ============================================
+     INITIALIZE FIREBASE
+     ============================================ */
 
-const app =
-initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
 
+  const auth = getAuth(app);
 
-const auth =
-getAuth(app);
-
-
-const db =
-getFirestore(app);
+  const db = getFirestore(app);
 
 
+  /* ============================================
+     ADMIN EMAIL
+     ============================================ */
 
-/* ==============================
-   BANGLADESH DATE
-============================== */
-
-function dhakaDate(){
-
-    return new Intl.DateTimeFormat(
-        "en-CA",
-        {
-            timeZone:"Asia/Dhaka",
-            year:"numeric",
-            month:"2-digit",
-            day:"2-digit"
-        }
-    ).format(new Date());
-
-}
+  const ADMIN_EMAIL = "admin@fft.local";
 
 
+  /* ============================================
+     ELEMENTS
+     ============================================ */
 
-/* ==============================
-   TOMORROW DATE
-============================== */
+  const loginSection = document.getElementById("loginSection");
+  const memberSection = document.getElementById("memberSection");
+  const adminSection = document.getElementById("adminSection");
 
-function tomorrow(){
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-    const now =
-    new Date();
+  const loginBtn = document.getElementById("loginBtn");
+  const loginMessage = document.getElementById("loginMessage");
+
+  const userEmail = document.getElementById("userEmail");
+  const adminEmail = document.getElementById("adminEmail");
+
+  const breakfast = document.getElementById("breakfast");
+  const lunch = document.getElementById("lunch");
+  const dinner = document.getElementById("dinner");
+
+  const mealTotal = document.getElementById("mealTotal");
+
+  const saveMealBtn = document.getElementById("saveMealBtn");
+  const saveMessage = document.getElementById("saveMessage");
+
+  const tomorrowDate = document.getElementById("tomorrowDate");
+
+  const historyBody = document.getElementById("historyBody");
+
+  const reportBody = document.getElementById("reportBody");
+  const grandTotal = document.getElementById("grandTotal");
 
 
-    const formatter =
-    new Intl.DateTimeFormat(
-        "en-US",
-        {
-            timeZone:"Asia/Dhaka",
-            year:"numeric",
-            month:"2-digit",
-            day:"2-digit"
-        }
+  /* ============================================
+     BANGLADESH DATE / TIME
+     ============================================ */
+
+  function getBangladeshDateTime() {
+
+    return new Date(
+      new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Dhaka"
+      })
     );
 
-
-    const parts =
-    formatter.formatToParts(now);
+  }
 
 
-    let year;
-    let month;
-    let day;
+  function getDateString(date) {
+
+    const year = date.getFullYear();
+
+    const month = String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+      date.getDate()
+    ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+
+  }
 
 
-    parts.forEach(p => {
+  function getTomorrowDate() {
 
-        if(p.type === "year"){
-            year = Number(p.value);
-        }
+    const bd = getBangladeshDateTime();
 
-        if(p.type === "month"){
-            month = Number(p.value);
-        }
+    bd.setDate(bd.getDate() + 1);
 
-        if(p.type === "day"){
-            day = Number(p.value);
-        }
+    return getDateString(bd);
 
-    });
+  }
 
 
-    const date =
-    new Date(
-        year,
-        month - 1,
-        day + 1
-    );
+  /* ============================================
+     CHECK 9 PM CUTOFF
+     ============================================ */
 
+  function isMealLocked() {
 
-    return (
+    const bd = getBangladeshDateTime();
 
-        date.getFullYear()
-        + "-"
-        +
-        String(
-            date.getMonth()+1
-        ).padStart(2,"0")
-        + "-"
-        +
-        String(
-            date.getDate()
-        ).padStart(2,"0")
-
-    );
-
-}
-
-
-
-/* ==============================
-   9 PM LOCK
-============================== */
-
-function isLocked(){
-
-    const parts =
-    new Intl.DateTimeFormat(
-        "en-GB",
-        {
-            timeZone:"Asia/Dhaka",
-            hour:"2-digit",
-            minute:"2-digit",
-            hour12:false
-        }
-    ).formatToParts(
-        new Date()
-    );
-
-
-    let hour = 0;
-
-
-    parts.forEach(p => {
-
-        if(p.type === "hour"){
-            hour = Number(p.value);
-        }
-
-    });
-
+    const hour = bd.getHours();
 
     return hour >= 21;
 
-}
+  }
 
 
+  /* ============================================
+     UPDATE TOTAL
+     ============================================ */
 
-/* ==============================
-   TOTAL
-============================== */
+  function updateTotal() {
 
-function updateTotal(){
+    const b = Number(breakfast.value);
+    const l = Number(lunch.value);
+    const d = Number(dinner.value);
 
-    const b =
-    Number(
-        document.getElementById(
-            "breakfast"
-        ).value
-    ) || 0;
+    const total = b + l + d;
 
+    mealTotal.textContent = total;
 
-    const l =
-    Number(
-        document.getElementById(
-            "lunch"
-        ).value
-    ) || 0;
+  }
 
 
-    const d =
-    Number(
-        document.getElementById(
-            "dinner"
-        ).value
-    ) || 0;
+  breakfast.addEventListener("change", updateTotal);
+  lunch.addEventListener("change", updateTotal);
+  dinner.addEventListener("change", updateTotal);
 
 
-    document.getElementById(
-        "mealTotal"
-    ).innerText =
-    b + l + d;
+  /* ============================================
+     LOGIN
+     ============================================ */
 
-}
+  loginBtn.addEventListener("click", async () => {
 
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
+    loginMessage.innerHTML = "";
 
-document.getElementById(
-    "breakfast"
-)
-.addEventListener(
-    "change",
-    updateTotal
-);
+    if (!email || !password) {
 
+      loginMessage.innerHTML =
+        '<div class="error">Please enter email and password.</div>';
 
-document.getElementById(
-    "lunch"
-)
-.addEventListener(
-    "change",
-    updateTotal
-);
-
-
-document.getElementById(
-    "dinner"
-)
-.addEventListener(
-    "change",
-    updateTotal
-);
-
-
-
-/* ==============================
-   LOGIN
-============================== */
-
-window.login =
-async function(){
-
-    const email =
-    document.getElementById(
-        "email"
-    ).value.trim();
-
-
-    const password =
-    document.getElementById(
-        "password"
-    ).value;
-
-
-    const msg =
-    document.getElementById(
-        "loginMsg"
-    );
-
-
-    msg.innerText =
-    "Logging in...";
-
-
-    try{
-
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-
-
-        msg.innerText = "";
-
-    }
-    catch(error){
-
-        msg.innerText =
-        "Login failed: "
-        +
-        error.message;
+      return;
 
     }
 
-};
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Logging in...";
 
+    try {
 
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-/* ==============================
-   LOGOUT
-============================== */
-
-window.logout =
-async function(){
-
-    await signOut(auth);
-
-};
-
-
-
-/* ==============================
-   AUTH STATE
-============================== */
-
-onAuthStateChanged(
-    auth,
-    async(user) => {
-
-
-        if(!user){
-
-            document
-            .getElementById(
-                "loginBox"
-            )
-            .classList
-            .remove("hidden");
-
-
-            document
-            .getElementById(
-                "memberPanel"
-            )
-            .classList
-            .add("hidden");
-
-
-            document
-            .getElementById(
-                "adminPanel"
-            )
-            .classList
-            .add("hidden");
-
-
-            return;
-
-        }
-
-
-
-        document
-        .getElementById(
-            "loginBox"
-        )
-        .classList
-        .add("hidden");
-
-
-
-        /* ADMIN */
-
-        if(
-            user.email ===
-            "admin@mess.local"
-        ){
-
-            document
-            .getElementById(
-                "adminPanel"
-            )
-            .classList
-            .remove("hidden");
-
-
-            document
-            .getElementById(
-                "memberPanel"
-            )
-            .classList
-            .add("hidden");
-
-
-            document
-            .getElementById(
-                "adminEmail"
-            )
-            .innerText =
-            user.email;
-
-
-            return;
-
-        }
-
-
-
-        /* MEMBER */
-
-        document
-        .getElementById(
-            "memberPanel"
-        )
-        .classList
-        .remove("hidden");
-
-
-        document
-        .getElementById(
-            "adminPanel"
-        )
-        .classList
-        .add("hidden");
-
-
-        document
-        .getElementById(
-            "memberEmail"
-        )
-        .innerText =
-        user.email;
-
-
-        document
-        .getElementById(
-            "tomorrowDate"
-        )
-        .innerText =
-        tomorrow();
-
-
-        applyLock();
-
-        await loadTomorrowMeal();
-
-        await loadHistory();
+      loginMessage.innerHTML =
+        '<div class="success-msg">Login successful.</div>';
 
     }
 
-);
+    catch (error) {
 
+      console.error(error);
 
-
-/* ==============================
-   APPLY LOCK
-============================== */
-
-function applyLock(){
-
-    const locked =
-    isLocked();
-
-
-    const button =
-    document.getElementById(
-        "saveBtn"
-    );
-
-
-    const message =
-    document.getElementById(
-        "lockMessage"
-    );
-
-
-    if(locked){
-
-        button.disabled = true;
-
-
-        message.className =
-        "notice locked";
-
-
-        message.innerHTML =
-        "🔒 <b>LOCKED</b><br>" +
-        "9:00 PM has passed. " +
-        "Tomorrow's meal cannot be changed.";
-
-    }
-    else{
-
-        button.disabled = false;
-
-
-        message.className =
-        "notice";
-
-
-        message.innerHTML =
-        "⏰ You can change tomorrow's meal until " +
-        "<b>9:00 PM Bangladesh time</b>.";
+      loginMessage.innerHTML =
+        `<div class="error">
+          Login failed: ${error.message}
+        </div>`;
 
     }
 
-}
+    finally {
+
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Login";
+
+    }
+
+  });
 
 
+  /* ============================================
+     AUTH STATE
+     ============================================ */
 
-/* ==============================
-   SAVE MEAL
-============================== */
+  onAuthStateChanged(auth, async (user) => {
 
-window.saveMeal =
-async function(){
+    if (!user) {
 
-    if(isLocked()){
+      loginSection.classList.remove("hidden");
 
-        alert(
-            "9:00 PM has passed. Meal is locked."
-        );
+      memberSection.classList.add("hidden");
 
-        applyLock();
+      adminSection.classList.add("hidden");
 
-        return;
+      return;
 
     }
 
 
-    const user =
-    auth.currentUser;
+    loginSection.classList.add("hidden");
 
 
-    if(!user){
-        return;
-    }
+    const loggedEmail =
+      (user.email || "").toLowerCase();
 
 
-    const date =
-    tomorrow();
+    /* ============================================
+       ADMIN CHECK
+       ============================================ */
+
+    const isAdmin =
+      loggedEmail === ADMIN_EMAIL.toLowerCase();
 
 
-    const breakfast =
-    Number(
-        document.getElementById(
-            "breakfast"
-        ).value
-    );
+    if (isAdmin) {
 
+      adminSection.classList.remove("hidden");
 
-    const lunch =
-    Number(
-        document.getElementById(
-            "lunch"
-        ).value
-    );
+      memberSection.classList.add("hidden");
 
+      adminEmail.textContent = user.email;
 
-    const dinner =
-    Number(
-        document.getElementById(
-            "dinner"
-        ).value
-    );
-
-
-
-    /*
-       SECURITY CHECK:
-       Only 0,1,2,3 accepted
-    */
-
-    const valid =
-    [0,1,2,3];
-
-
-    if(
-        !valid.includes(breakfast) ||
-        !valid.includes(lunch) ||
-        !valid.includes(dinner)
-    ){
-
-        alert(
-            "Only 0, 1, 2 or 3 are allowed."
-        );
-
-        return;
+      await loadAdminReport();
 
     }
 
+    else {
 
-    const total =
-    breakfast +
-    lunch +
-    dinner;
+      memberSection.classList.remove("hidden");
 
+      adminSection.classList.add("hidden");
 
+      userEmail.textContent = user.email;
 
-    try{
+      await loadTomorrowMeal();
 
-        await setDoc(
-
-            doc(
-                db,
-                "meals",
-                user.uid +
-                "_" +
-                date
-            ),
-
-            {
-
-                uid:user.uid,
-
-                email:user.email,
-
-                date:date,
-
-                breakfast:breakfast,
-
-                lunch:lunch,
-
-                dinner:dinner,
-
-                total:total,
-
-                updatedAt:
-                new Date().toISOString()
-
-            },
-
-            {
-                merge:true
-            }
-
-        );
-
-
-        const msg =
-        document.getElementById(
-            "saveMsg"
-        );
-
-
-        msg.innerText =
-        "✅ Meal saved successfully.";
-
-
-        msg.className =
-        "success";
-
-
-        await loadHistory();
-
-    }
-    catch(error){
-
-        document.getElementById(
-            "saveMsg"
-        ).innerText =
-        "❌ Error: "
-        +
-        error.message;
+      await loadHistory();
 
     }
 
-};
+  });
 
 
+  /* ============================================
+     LOAD TOMORROW MEAL
+     ============================================ */
 
-/* ==============================
-   LOAD TOMORROW MEAL
-============================== */
+  async function loadTomorrowMeal() {
 
-async function loadTomorrowMeal(){
+    const date = getTomorrowDate();
 
-    const user =
-    auth.currentUser;
+    tomorrowDate.textContent = date;
 
+    const user = auth.currentUser;
 
-    if(!user){
-        return;
-    }
-
-
-    const date =
-    tomorrow();
+    if (!user) return;
 
 
-    try{
-
-        const snap =
-        await getDoc(
-
-            doc(
-                db,
-                "meals",
-                user.uid +
-                "_" +
-                date
-            )
-
-        );
+    const mealId =
+      `${user.uid}_${date}`;
 
 
-        if(!snap.exists()){
+    try {
 
-            document.getElementById(
-                "breakfast"
-            ).value = "0";
+      const mealRef =
+        doc(db, "meals", mealId);
 
-
-            document.getElementById(
-                "lunch"
-            ).value = "0";
+      const snapshot =
+        await getDoc(mealRef);
 
 
-            document.getElementById(
-                "dinner"
-            ).value = "0";
+      if (snapshot.exists()) {
 
+        const data = snapshot.data();
 
-            updateTotal();
+        breakfast.value =
+          String(data.breakfast ?? 0);
 
-            return;
+        lunch.value =
+          String(data.lunch ?? 0);
 
-        }
-
-
-        const data =
-        snap.data();
-
-
-        document.getElementById(
-            "breakfast"
-        ).value =
-        data.breakfast ?? 0;
-
-
-        document.getElementById(
-            "lunch"
-        ).value =
-        data.lunch ?? 0;
-
-
-        document.getElementById(
-            "dinner"
-        ).value =
-        data.dinner ?? 0;
-
+        dinner.value =
+          String(data.dinner ?? 0);
 
         updateTotal();
 
-    }
-    catch(error){
-
-        console.log(error);
+      }
 
     }
 
-}
+    catch (error) {
+
+      console.error(
+        "Could not load meal:",
+        error
+      );
+
+    }
 
 
+    updateLockStatus();
 
-/* ==============================
-   MEMBER HISTORY
-============================== */
-
-window.loadHistory =
-async function(){
-
-    const user =
-    auth.currentUser;
+  }
 
 
-    if(!user){
+  /* ============================================
+     LOCK / UNLOCK BUTTON
+     ============================================ */
+
+  function updateLockStatus() {
+
+    if (isMealLocked()) {
+
+      saveMealBtn.disabled = true;
+
+      saveMealBtn.textContent =
+        "🔒 Tomorrow's Meal Locked";
+
+      breakfast.disabled = true;
+      lunch.disabled = true;
+      dinner.disabled = true;
+
+    }
+
+    else {
+
+      saveMealBtn.disabled = false;
+
+      saveMealBtn.textContent =
+        "Save Tomorrow's Meal";
+
+      breakfast.disabled = false;
+      lunch.disabled = false;
+      dinner.disabled = false;
+
+    }
+
+  }
+
+
+  /* ============================================
+     SAVE MEAL
+     ============================================ */
+
+  saveMealBtn.addEventListener(
+    "click",
+    async () => {
+
+      saveMessage.innerHTML = "";
+
+
+      if (isMealLocked()) {
+
+        saveMessage.innerHTML =
+          `<div class="error">
+            🔒 It is already 9:00 PM or later.
+            Tomorrow's meal is locked.
+          </div>`;
+
+        updateLockStatus();
+
         return;
-    }
+
+      }
 
 
-    const body =
-    document.getElementById(
-        "historyBody"
-    );
+      const user = auth.currentUser;
+
+      if (!user) {
+
+        saveMessage.innerHTML =
+          '<div class="error">Please login again.</div>';
+
+        return;
+
+      }
 
 
-    body.innerHTML =
-    "<tr>" +
-    "<td colspan='5'>Loading...</td>" +
-    "</tr>";
+      const date = getTomorrowDate();
 
 
-    try{
+      const b = Number(breakfast.value);
+      const l = Number(lunch.value);
+      const d = Number(dinner.value);
 
-        const q =
-        query(
 
-            collection(
-                db,
-                "meals"
-            ),
+      /* Validate meal values */
 
-            where(
-                "uid",
-                "==",
-                user.uid
-            )
+      if (
+        ![0,1,2,3].includes(b) ||
+        ![0,1,2,3].includes(l) ||
+        ![0,1,2,3].includes(d)
+      ) {
 
+        saveMessage.innerHTML =
+          '<div class="error">Invalid meal value.</div>';
+
+        return;
+
+      }
+
+
+      const total =
+        b + l + d;
+
+
+      const mealId =
+        `${user.uid}_${date}`;
+
+
+      saveMealBtn.disabled = true;
+      saveMealBtn.textContent = "Saving...";
+
+
+      try {
+
+        await setDoc(
+          doc(db, "meals", mealId),
+          {
+
+            uid: user.uid,
+
+            email: user.email,
+
+            date: date,
+
+            breakfast: b,
+
+            lunch: l,
+
+            dinner: d,
+
+            total: total,
+
+            updatedAt: new Date()
+
+          },
+          {
+            merge: true
+          }
         );
 
 
-        const snap =
+        saveMessage.innerHTML =
+          `<div class="success-msg">
+            ✅ Tomorrow's meal saved successfully.
+          </div>`;
+
+
+        await loadHistory();
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        saveMessage.innerHTML =
+          `<div class="error">
+            Save failed: ${error.message}
+          </div>`;
+
+      }
+
+      finally {
+
+        updateLockStatus();
+
+      }
+
+    }
+  );
+
+
+  /* ============================================
+     MEMBER HISTORY
+     ============================================ */
+
+  document
+    .getElementById("loadHistoryBtn")
+    .addEventListener(
+      "click",
+      loadHistory
+    );
+
+
+  async function loadHistory() {
+
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+
+    historyBody.innerHTML =
+      `<tr>
+        <td colspan="5">Loading...</td>
+      </tr>`;
+
+
+    try {
+
+      const mealsRef =
+        collection(db, "meals");
+
+
+      const q =
+        query(
+          mealsRef,
+          where("uid", "==", user.uid)
+        );
+
+
+      const snapshot =
         await getDocs(q);
 
 
-        let rows = [];
+      const rows = [];
 
 
-        snap.forEach(
-            docSnap => {
+      snapshot.forEach((docSnap) => {
 
-                rows.push(
-                    docSnap.data()
-                );
+        rows.push(docSnap.data());
 
-            }
-        );
+      });
 
 
-        rows.sort(
-            (a,b) =>
-            String(b.date)
-            .localeCompare(
-                String(a.date)
-            )
-        );
+      rows.sort(
+        (a, b) =>
+          String(b.date)
+            .localeCompare(String(a.date))
+      );
 
 
-        body.innerHTML = "";
+      historyBody.innerHTML = "";
 
 
-        if(rows.length === 0){
+      if (rows.length === 0) {
 
-            body.innerHTML =
-            "<tr>" +
-            "<td colspan='5'>" +
-            "No meal record" +
-            "</td>" +
-            "</tr>";
-
-            return;
-
-        }
-
-
-        rows.forEach(r => {
-
-            body.innerHTML += `
-
-            <tr>
-
-                <td>
-                    ${r.date || ""}
-                </td>
-
-                <td>
-                    ${r.breakfast ?? 0}
-                </td>
-
-                <td>
-                    ${r.lunch ?? 0}
-                </td>
-
-                <td>
-                    ${r.dinner ?? 0}
-                </td>
-
-                <td>
-                    <b>
-                        ${r.total ?? 0}
-                    </b>
-                </td>
-
-            </tr>
-
-            `;
-
-        });
-
-    }
-    catch(error){
-
-        body.innerHTML =
-        "<tr>" +
-        "<td colspan='5'>" +
-        error.message +
-        "</td>" +
-        "</tr>";
-
-    }
-
-};
-
-
-
-/* ==============================
-   ADMIN REPORT
-============================== */
-
-window.loadReport =
-async function(){
-
-    const from =
-    document.getElementById(
-        "fromDate"
-    ).value;
-
-
-    const to =
-    document.getElementById(
-        "toDate"
-    ).value;
-
-
-    if(!from || !to){
-
-        alert(
-            "Please select both dates."
-        );
+        historyBody.innerHTML =
+          `<tr>
+            <td colspan="5">
+              No meal records found.
+            </td>
+          </tr>`;
 
         return;
 
+      }
+
+
+      rows.forEach((data) => {
+
+        const tr =
+          document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+          <td>${data.date ?? ""}</td>
+
+          <td>${data.breakfast ?? 0}</td>
+
+          <td>${data.lunch ?? 0}</td>
+
+          <td>${data.dinner ?? 0}</td>
+
+          <td><b>${data.total ?? 0}</b></td>
+
+        `;
+
+
+        historyBody.appendChild(tr);
+
+      });
+
     }
 
+    catch (error) {
 
-    const body =
-    document.getElementById(
-        "reportBody"
+      console.error(error);
+
+      historyBody.innerHTML =
+        `<tr>
+          <td colspan="5">
+            Error loading history: ${error.message}
+          </td>
+        </tr>`;
+
+    }
+
+  }
+
+
+  /* ============================================
+     ADMIN REPORT
+     ============================================ */
+
+  document
+    .getElementById("loadReportBtn")
+    .addEventListener(
+      "click",
+      loadAdminReport
     );
 
 
-    body.innerHTML =
-    "<tr>" +
-    "<td colspan='6'>Loading...</td>" +
-    "</tr>";
+  async function loadAdminReport() {
+
+    reportBody.innerHTML =
+      `<tr>
+        <td colspan="6">Loading report...</td>
+      </tr>`;
 
 
-    try{
+    try {
 
-        const snap =
-        await getDocs(
-            collection(
-                db,
-                "meals"
-            )
-        );
+      const mealsRef =
+        collection(db, "meals");
 
 
-        let rows = [];
+      const snapshot =
+        await getDocs(mealsRef);
 
 
-        snap.forEach(
-            docSnap => {
-
-                const r =
-                docSnap.data();
+      const rows = [];
 
 
-                if(
-                    r.date >= from &&
-                    r.date <= to
-                ){
+      snapshot.forEach((docSnap) => {
 
-                    rows.push(r);
+        rows.push(docSnap.data());
 
-                }
-
-            }
-        );
+      });
 
 
-        rows.sort(
-            (a,b) => {
+      rows.sort((a, b) => {
 
-                if(a.date === b.date){
-
-                    return String(
-                        a.email
-                    )
-                    .localeCompare(
-                        String(b.email)
-                    );
-
-                }
+        const dateCompare =
+          String(a.date)
+            .localeCompare(String(b.date));
 
 
-                return String(
-                    a.date
-                )
-                .localeCompare(
-                    String(b.date)
-                );
+        if (dateCompare !== 0) {
 
-            }
-        );
-
-
-        body.innerHTML = "";
-
-
-        let grandTotal = 0;
-
-
-        rows.forEach(r => {
-
-            const total =
-            Number(r.total) || 0;
-
-
-            grandTotal += total;
-
-
-            body.innerHTML += `
-
-            <tr>
-
-                <td>
-                    ${r.date || ""}
-                </td>
-
-                <td>
-                    ${r.email || ""}
-                </td>
-
-                <td>
-                    ${r.breakfast ?? 0}
-                </td>
-
-                <td>
-                    ${r.lunch ?? 0}
-                </td>
-
-                <td>
-                    ${r.dinner ?? 0}
-                </td>
-
-                <td>
-                    <b>
-                        ${total}
-                    </b>
-                </td>
-
-            </tr>
-
-            `;
-
-        });
-
-
-        if(rows.length === 0){
-
-            body.innerHTML =
-            "<tr>" +
-            "<td colspan='6'>" +
-            "No records found" +
-            "</td>" +
-            "</tr>";
+          return dateCompare;
 
         }
 
 
-        document.getElementById(
-            "grandTotal"
-        ).innerText =
-        grandTotal;
+        return String(a.email || "")
+          .localeCompare(
+            String(b.email || "")
+          );
+
+      });
+
+
+      reportBody.innerHTML = "";
+
+
+      let totalAll = 0;
+
+
+      rows.forEach((data) => {
+
+        const total =
+          Number(data.total ?? 0);
+
+
+        totalAll += total;
+
+
+        const tr =
+          document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+          <td>${data.date ?? ""}</td>
+
+          <td>${data.email ?? data.uid ?? ""}</td>
+
+          <td>${data.breakfast ?? 0}</td>
+
+          <td>${data.lunch ?? 0}</td>
+
+          <td>${data.dinner ?? 0}</td>
+
+          <td><b>${total}</b></td>
+
+        `;
+
+
+        reportBody.appendChild(tr);
+
+      });
+
+
+      if (rows.length === 0) {
+
+        reportBody.innerHTML =
+          `<tr>
+            <td colspan="6">
+              No meal records found.
+            </td>
+          </tr>`;
+
+      }
+
+
+      grandTotal.textContent =
+        totalAll;
+
 
     }
-    catch(error){
 
-        body.innerHTML =
-        "<tr>" +
-        "<td colspan='6'>" +
-        error.message +
-        "</td>" +
-        "</tr>";
+    catch (error) {
+
+      console.error(error);
+
+      reportBody.innerHTML =
+        `<tr>
+          <td colspan="6">
+            Error: ${error.message}
+          </td>
+        </tr>`;
 
     }
 
-};
+  }
 
 
+  /* ============================================
+     PRINT / SAVE PDF
+     ============================================ */
 
-/* ==============================
-   DEFAULT ADMIN DATES
-============================== */
+  document
+    .getElementById("printBtn")
+    .addEventListener(
+      "click",
+      () => {
 
-document.getElementById(
-    "fromDate"
-).value =
-dhakaDate();
+        window.print();
 
-
-document.getElementById(
-    "toDate"
-).value =
-dhakaDate();
-
+      }
+    );
 
 
-/* ==============================
-   CHECK LOCK EVERY MINUTE
-============================== */
+  /* ============================================
+     LOGOUT
+     ============================================ */
 
-setInterval(
-    () => {
+  document
+    .getElementById("logoutBtn")
+    .addEventListener(
+      "click",
+      async () => {
 
-        if(auth.currentUser){
+        await signOut(auth);
 
-            applyLock();
+      }
+    );
 
-        }
 
-    },
-    60000
-);
+  document
+    .getElementById("adminLogoutBtn")
+    .addEventListener(
+      "click",
+      async () => {
+
+        await signOut(auth);
+
+      }
+    );
+
+
+  /* ============================================
+     INITIAL SETUP
+     ============================================ */
+
+  updateTotal();
+
+  setInterval(
+    updateLockStatus,
+    30000
+  );
 
 </script>
 
